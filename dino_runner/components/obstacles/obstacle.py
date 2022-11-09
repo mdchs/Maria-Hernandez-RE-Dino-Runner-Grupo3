@@ -10,7 +10,7 @@ class Obstacle(Sprite):
         self.rect.x = SCREEN_WIDTH
 
     def update(self, obstacle):
-        self.rect.x -= 5
+        self.rect.x -= 10
         if self.rect.x < -self.rect.width:
             obstacle.pop()
 
