@@ -28,6 +28,7 @@ class Game:
     def run(self):
         self.obstacle_manager.reset_obstacles(self)
         self.player_heart_manager.reset_hearts()
+        self.reset_score()
         self.playing = True
         while self.playing:
             self.events()
@@ -77,6 +78,9 @@ class Game:
             self.game_speed += 1
         text, text_rect = text_utils.get_score_element(self.points)
         self.screen.blit(text, text_rect)
+
+    def reset_score(self):
+        self.points = 0
 
     def handle_key_events_on_menu(self):
         for event in pygame.event.get():
