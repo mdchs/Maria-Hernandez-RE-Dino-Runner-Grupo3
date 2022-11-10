@@ -5,7 +5,8 @@ class Cactus(Obstacle):
     def __init__(self, image):
         self.type = random.randint(0, 2)
         super().__init__(image, self.type)
-        self.rect.y = 325
+        height_cactus = self.image[0].get_height()
+        self.rect.y = 400 - height_cactus
 
 
 
