@@ -5,6 +5,7 @@ from dino_runner.components.dinosaur import Dinosaur
 from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, RUNNING
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
 from dino_runner.components.player_hearts.player_heart_manager import PlayerHeartManager
+from dino_runner.components.power_ups.power_up_manager import PowerUpManager
 
 class Game:
     def __init__(self):
@@ -23,16 +24,24 @@ class Game:
         self.points = 0
         self.running = True
         self.death_count = 0
+        self.power_up_manager = PowerUpManager()
         self.player_heart_manager = PlayerHeartManager()
 
     def run(self):
-        self.obstacle_manager.reset_obstacles(self)
-        self.player_heart_manager.reset_hearts()
+        self.create_components()
         self.playing = True
         while self.playing:
             self.events()
             self.update()
             self.draw()
+    
+    def create_components(self):
+        self.obstacle_manager.reset_obstacles(self)
+        self.power_up_manager.reset_power_ups(self.points)
+        self.player_heart_manager.reset_hearts()
+        self.points = 0
+        self.game_speed = 20
+
     
     def execute(self):
         while self.running:
@@ -50,6 +59,7 @@ class Game:
         user_input = pygame.key.get_pressed()
         self.player.update(user_input)
         self.obstacle_manager.update(self)
+        self.power_up_manager.update(self.points, self.game_speed, self.player)
 
     def draw(self):
         self.score() ## MOSTRAR EL SCORE EN TIEMPO REAL EN LA PANTALL
@@ -57,6 +67,7 @@ class Game:
         self.draw_background()
         self.player.draw(self.screen)
         self.obstacle_manager.draw(self.screen)
+        self.power_up_manager.draw(self.screen)
         self.player_heart_manager.draw(self.screen)
 
         pygame.display.update()
@@ -77,6 +88,7 @@ class Game:
             self.game_speed += 1
         text, text_rect = text_utils.get_score_element(self.points)
         self.screen.blit(text, text_rect)
+        self.player.check_invincibility(self.screen)
 
     def handle_key_events_on_menu(self):
         for event in pygame.event.get():
