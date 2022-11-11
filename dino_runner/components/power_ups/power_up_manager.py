@@ -10,6 +10,7 @@ class PowerUpManager:
         self.when_appears = 0
         self.points = 0
         self.option_numbers = list(range(1, 10))
+        self.powerup_sound = pygame.mixer.Sound("dino_runner/assets/Sounds/powerup.mp3")
 
     def reset_power_ups(self, points):
         self.power_ups = []
@@ -34,6 +35,7 @@ class PowerUpManager:
         for power_up in self.power_ups:
             power_up.update(game_speed, self.power_ups)
             if player.dino_rect.colliderect(power_up.rect):
+                self.powerup_sound.play()
                 power_up.start_time = pygame.time.get_ticks()
                 if isinstance(power_up, Shield):
                     player.shield = True

@@ -7,6 +7,9 @@ from dino_runner.utils.constants import SMALL_CACTUS, LARGE_CACTUS
 class ObstacleManager:
     def __init__(self):
         self.obstacles = []
+        
+        #Sounds
+        self.destruction_sound = pygame.mixer.Sound("dino_runner/assets/Sounds/destruction.wav")
 
     def update(self, game):
         if len(self.obstacles) == 0:
@@ -24,6 +27,7 @@ class ObstacleManager:
             obstacle.update(game.game_speed, self.obstacles)
             
             if game.player.hammer is not None and game.player.hammer.rect.colliderect(obstacle.rect):
+                self.destruction_sound.play()
                 game.player.hammer.kill()
                 self.obstacles.pop()
             
@@ -48,9 +52,9 @@ class ObstacleManager:
                     self.obstacles.remove(obstacle)
 
 
-    def draw(self, screen):
+    def draw(self, screen, night):
         for obstacle in self.obstacles:
-            obstacle.draw(screen)
+            obstacle.draw(screen, night)
 
     def reset_obstacles(self, self1):
         self.obstacles = []

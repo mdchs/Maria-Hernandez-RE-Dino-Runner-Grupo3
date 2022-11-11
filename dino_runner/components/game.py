@@ -10,6 +10,7 @@ from dino_runner.components.power_ups.power_up_manager import PowerUpManager
 class Game:
     def __init__(self):
         pygame.init()
+        pygame.mixer.init()
         pygame.display.set_caption(TITLE)
         pygame.display.set_icon(ICON)
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -26,6 +27,8 @@ class Game:
         self.death_count = 0
         self.power_up_manager = PowerUpManager()
         self.player_heart_manager = PlayerHeartManager()
+        self.night = False
+        self.color_points = (0, 0, 0)
 
     def run(self):
         self.create_components()
@@ -62,13 +65,21 @@ class Game:
         self.player.update(user_input)
         self.obstacle_manager.update(self)
         self.power_up_manager.update(self.points, self.game_speed, self.player)
+        if 1000 < self.points < 2000 or 3000 < self.points < 4000:
+            self.night = True
+            self.screen.fill((0, 0, 0))
+            self.color_points = (255, 255, 255)
+        else:
+            self.night = False
+            self.screen.fill((255, 255, 255))
+            self.color_points = (0, 0, 0)
 
     def draw(self):
         self.score() ## MOSTRAR EL SCORE EN TIEMPO REAL EN LA PANTALL
         self.clock.tick(FPS)
         self.draw_background()
-        self.player.draw(self.screen)
-        self.obstacle_manager.draw(self.screen)
+        self.player.draw(self.screen, self.night)
+        self.obstacle_manager.draw(self.screen, self.night)
         self.power_up_manager.draw(self.screen)
         self.player_heart_manager.draw(self.screen)
 
@@ -88,9 +99,9 @@ class Game:
         self.points += 1
         if self.points % 100 == 0:
             self.game_speed += 1
-        text, text_rect = text_utils.get_score_element(self.points)
+        text, text_rect = text_utils.get_score_element(self.points, self.color_points)
         self.screen.blit(text, text_rect)
-        self.player.check_invincibility(self.screen)
+        self.player.check_invincibility(self.screen, self.night)
 
     def handle_key_events_on_menu(self):
         for event in pygame.event.get():

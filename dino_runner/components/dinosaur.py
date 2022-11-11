@@ -13,6 +13,7 @@ from dino_runner.utils.constants import (
     DEFAULT_TYPE, SHIELD_TYPE, HAMMER_TYPE
     )
 from dino_runner.components.hammer import Hammer
+from dino_runner.components.invertcolor import InvertirColor
 
 class Dinosaur(Sprite):
     X_POS = 80
@@ -40,7 +41,11 @@ class Dinosaur(Sprite):
         self.dino_jump = False
         self.jump_vel = self.JUMP_VEL
         self.setup_state_booleans()
-    
+        self.invertir_color = InvertirColor()
+
+        #Sounds
+        self.jump_sound = pygame.mixer.Sound("dino_runner/assets/Sounds/jump.ogg")
+
     def setup_state_booleans(self):
         self.has_powerup = False
         self.shield = False
@@ -62,6 +67,7 @@ class Dinosaur(Sprite):
             self.dino_duck = True
             self.dino_jump = False
         elif user_input[pygame.K_UP] and not self.dino_jump:
+            self.jump_sound.play()
             self.dino_run = False
             self.dino_duck = False
             self.dino_jump = True
@@ -76,7 +82,6 @@ class Dinosaur(Sprite):
         if self.hamer_enabled > 0 and user_input[pygame.K_SPACE]:
             self.hammer = Hammer(self.dino_rect.x + 100, self.dino_rect.y + 50)
             self.hammer_enabled = max(self.hamer_enabled - 1, 0)
-            self.hamer_enabled -= 1
             if self.hamer_enabled == 0:
                 self.update_to_default(HAMMER_TYPE)
         
@@ -99,19 +104,26 @@ class Dinosaur(Sprite):
             self.dino_rect.y = self.Y_POS
             self.dino_jump = False
             self.jump_vel = self.JUMP_VEL
-        
-    def draw(self, screen):
+
+    def draw(self, screen, night):
+        if night:
+            self.invertir_color.invert(self.image, (255, 255, 255), (0, 0, 0))
+            self.invertir_color.invert(self.image, (83,83,83), (255, 255, 254))
+        else:
+            self.invertir_color.invert(self.image, (0, 0, 0), (255, 255, 255))
+            self.invertir_color.invert(self.image, (255, 255, 254), (83,83,83))
+
         screen.blit(self.image, (self.dino_rect.x, self.dino_rect.y))
         if self.hammer:
             self.hammer.draw(screen)
 
-    def check_invincibility(self, screen):
+    def check_invincibility(self, screen, night):
         if self.shield:
             time_to_show = round((self.shield_time_up - pygame.time.get_ticks()) / 1000, 2)
             if time_to_show >= 0:
                 if self.show_text:
                     fond = pygame.font.Font('freesansbold.ttf', 18)
-                    text = fond.render(f'Shield enabled for {time_to_show}', True, (0, 0, 0))
+                    text = fond.render(f'Shield enabled for {time_to_show}', True, ((255, 255, 255) if night else (0, 0, 0)))
                     textRect = text.get_rect()
                     textRect.center = (500, 40)
                     screen.blit(text, textRect)
