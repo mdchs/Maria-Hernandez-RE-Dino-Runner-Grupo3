@@ -36,6 +36,7 @@ class ObstacleManager:
                     else:
                         pygame.time.delay(500)
                         game.playing = False
+                        
                         game.death_count += 1
                         break
                 else:

@@ -36,11 +36,13 @@ class Game:
             self.draw()
     
     def create_components(self):
+        self.points = 0
+        self.game_speed = 20
         self.obstacle_manager.reset_obstacles(self)
         self.power_up_manager.reset_power_ups(self.points)
         self.player_heart_manager.reset_hearts()
-        self.points = 0
-        self.game_speed = 20
+        self.player.setup_state_booleans()
+        self.player.type = "default"
 
     
     def execute(self):
@@ -121,7 +123,6 @@ class Game:
 
     def show_menu(self):
         self.running = True
-
         white_color = (255, 255, 255)
         self.screen.fill(white_color)
         self.print_menu_elements()

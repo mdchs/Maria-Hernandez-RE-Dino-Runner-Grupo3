@@ -76,6 +76,7 @@ class Dinosaur(Sprite):
         if self.hamer_enabled > 0 and user_input[pygame.K_SPACE]:
             self.hammer = Hammer(self.dino_rect.x + 100, self.dino_rect.y + 50)
             self.hammer_enabled = max(self.hamer_enabled - 1, 0)
+            self.hamer_enabled -= 1
             if self.hamer_enabled == 0:
                 self.update_to_default(HAMMER_TYPE)
         
