@@ -2,8 +2,10 @@ import pygame
 
 from dino_runner.components import text_utils
 from dino_runner.components.dinosaur import Dinosaur
-from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, RUNNING
+from dino_runner.components.clouds import Clouds
+from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, RUNNING, GAMEOVER
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
+from dino_runner.components.cloud_manager import CloudManager
 from dino_runner.components.player_hearts.player_heart_manager import PlayerHeartManager
 from dino_runner.components.power_ups.power_up_manager import PowerUpManager
 
@@ -21,6 +23,7 @@ class Game:
         self.y_pos_bg = 380
         self.player = Dinosaur()
         self.obstacle_manager = ObstacleManager()
+        self.cloud_manager = CloudManager()
         
         self.points = 0
         self.running = True
@@ -64,6 +67,7 @@ class Game:
         user_input = pygame.key.get_pressed()
         self.player.update(user_input)
         self.obstacle_manager.update(self)
+        self.cloud_manager.update(self)
         self.power_up_manager.update(self.points, self.game_speed, self.player)
         if 1000 < self.points < 2000 or 3000 < self.points < 4000:
             self.night = True
@@ -78,6 +82,7 @@ class Game:
         self.score() ## MOSTRAR EL SCORE EN TIEMPO REAL EN LA PANTALL
         self.clock.tick(FPS)
         self.draw_background()
+        self.cloud_manager.draw(self.screen, self.night)
         self.player.draw(self.screen, self.night)
         self.obstacle_manager.draw(self.screen, self.night)
         self.power_up_manager.draw(self.screen)
@@ -122,6 +127,7 @@ class Game:
             text, text_rect = text_utils.get_centred_message('Press any Key to Start')
             self.screen.blit(text, text_rect)
         elif self.death_count > 0:
+            self.screen.blit(GAMEOVER, (half_screen_width - 195, half_screen_height - 200))
             text, text_rect = text_utils.get_centred_message('Press any Key to Restart')
             score, socre_rect = text_utils.get_centred_message('Your score: ' + str(self.points), height=half_screen_height + 50)
             death, death_rect = text_utils.get_centred_message('Death count: ' + str(self.death_count), height=half_screen_height + 100)
